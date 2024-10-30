@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/fullAccess"
+        android:contentDescription="upgrade account"
+        android:title="Full Access"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/secretAccess"
+        android:contentDescription="upgrade account"
+        android:title="Secret Access"
+        app:showAsAction="never" />
+
+</menu>

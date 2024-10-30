@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "944564201993",
+    "project_id": "passwordmanager-5c96e",
+    "storage_bucket": "passwordmanager-5c96e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944564201993:android:48bd33a74488db96b6e6d8",
+        "android_client_info": {
+          "package_name": "com.example.passwordmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "944564201993-7m8ja37jdd6jd4j3h0mfa60hiabf2agj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGJ_mdC6fOTtWxNMqYohNOsa_Nydv3m1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "944564201993-7m8ja37jdd6jd4j3h0mfa60hiabf2agj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

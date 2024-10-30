@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="15sp"
+    android:layout_marginVertical="25sp"
+    android:orientation="vertical"
+    tools:context=".authentication.pin.FullAccessPinFragment">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter Top Super Secret Pin" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25sp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txtPin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Pin"
+            android:imeOptions="actionDone"
+            android:inputType="numberPassword"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save data to datastore" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/hiddenData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

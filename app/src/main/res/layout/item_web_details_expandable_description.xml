@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/webDetailsCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5sp"
+            android:layout_marginTop="2sp"
+            app:cardElevation="5dp"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10sp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/credentialName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:textSize="35sp"
+                    tools:text="Origin TRY" />
+
+                <!-- Login: -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/loginLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login:"
+                    android:textSize="15sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+
+                    app:layout_constraintTop_toBottomOf="@id/credentialName"
+
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/credentialUsernameText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5sp"
+                    android:textSize="25sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+
+                    app:layout_constraintTop_toBottomOf="@id/loginLabel"
+                    tools:text="Matix025234546 dasdj ahsdjh jsadh jashd jash djash djhas jashd" />
+
+                <!-- Password: -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/passwordLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Password:"
+                    android:textSize="15sp"
+
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/credentialUsernameText"
+
+                    />
+                <!-- Może jakieś rozsuwane z listy, klik kafel na głównej a następnie
+                        wysuwa sie coś takiego jak jest na tym layoucie.
+                        klik ponownie to schowaj, lub mając wysuniete zostanie schowane
+                        to poprzednie a nowe rozsunięte
+
+                -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/credentialPasswordText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+
+                    android:layout_marginStart="5sp"
+                    android:inputType="textPassword"
+                    app:layout_constraintTop_toBottomOf="@id/passwordLabel"
+                    tools:text="Password" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/visibilityIcon"
+                    android:layout_width="30sp"
+                    android:layout_height="30sp"
+                    android:background="@null"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintBottom_toBottomOf="@id/credentialPasswordText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/credentialPasswordText"
+                    app:srcCompat="@drawable/ic_visibility_on"
+
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <ProgressBar
+            android:id="@+id/loadingCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

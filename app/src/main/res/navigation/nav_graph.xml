@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/webDetailsListFragment">
+
+    <fragment
+        android:id="@+id/webDetailsListFragment"
+        android:name="com.example.passwordmanager.webDetailsList.WebDetailsListFragment"
+        android:label="Credentials"
+        tools:layout="@layout/fragment_web_details_list">
+
+        <action
+            android:id="@+id/action_webDetailsList_to_webCredentialEditionFragment"
+            app:destination="@id/webCredentialItemDialogFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_webCredentialItemDialogFragment_to_fullAccessPinFragment"
+            app:destination="@+id/fullAccessPinFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fullAccessPinFragment"
+        android:name="com.example.passwordmanager.authentication.pin.FullAccessPinFragment" />
+
+    <fragment
+        android:id="@+id/webCredentialItemDialogFragment"
+        android:name="com.example.passwordmanager.WebCredentialItemDialogFragment">
+
+    </fragment>
+
+    <action
+        android:id="@+id/main_activity_to_add_details_web_item_fragment"
+        app:destination="@+id/addDetailsWebItemFragment" />
+
+    <action
+        android:id="@+id/main_activity_to_full_access_pin_fragment"
+        app:destination="@+id/fullAccessPinFragment" />
+
+</navigation>

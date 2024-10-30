@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="5sp"
+    android:layout_marginTop="2sp"
+    android:clickable="true"
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:animateLayoutChanges="true">
+        <!-- Icon Logo -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/webLogoImageView"
+            android:layout_width="75sp"
+            android:layout_height="75sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_launcher_foreground" />
+        <!-- Logo -->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/webNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            app:layout_constraintBottom_toBottomOf="@id/webLogoImageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/webLogoImageView"
+            app:layout_constraintTop_toTopOf="@id/webLogoImageView"
+            tools:text="Ubisoft Name" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@id/loginLabel"
+            style="?attr/textInputFilledStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Login"
+            android:paddingTop="35dp"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/webNameTextView"
+            tools:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/credentialUsernameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5sp"
+                android:cursorVisible="false"
+                android:drawableEnd="@drawable/ic_copy"
+                android:focusable="false"
+                android:inputType="text"
+                android:text="BO tak"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                tools:text="Matix02" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loginLabel">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordLabel"
+                style="?attr/textInputFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Password"
+                android:visibility="gone"
+                app:passwordToggleEnabled="true"
+                tools:visibility="visible">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/credentialPasswordText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5sp"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:inputType="textPassword"
+                    android:text="BO tak"
+                    android:textColor="@color/black"
+                    android:textSize="25sp"
+                    tools:text="Password" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
