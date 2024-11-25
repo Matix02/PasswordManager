@@ -2,13 +2,11 @@ package com.example.passwordmanager
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -90,10 +88,6 @@ class WebCredentialItemDialogFragment : DialogFragment() {
             }
             false
         }
-        binding.switchAdminPermission.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked != viewModel.viewState.value?.newItem?.belongToAdmin)
-                viewModel.authorize(isChecked)
-        }
     }
 
     private fun showPinVerificationDialog() {
@@ -129,14 +123,6 @@ class WebCredentialItemDialogFragment : DialogFragment() {
             binding.txtName.setText(viewState?.newItem?.name)
             binding.txtPassword.setText(viewState?.newItem?.password)
             binding.txtLogin.setText(viewState?.newItem?.username)
-            binding.switchAdminPermission.isChecked = viewState?.newItem?.belongToAdmin == true
-            binding.txtIsAuthorizationNeeded.text = if (viewState?.isAdmin == true) "Auhorized ;)" else "Authorization needed ;("
-            binding.txtIsAuthorizationNeeded.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    if (viewState?.isAdmin == true) R.color.teal_200 else androidx.appcompat.R.color.error_color_material_dark
-                )
-            )
             binding.btnDelete.isVisible = viewModel.oldWebDetails != null
         }
         viewModel.saveCredentialItemEvent.observeEvent(viewLifecycleOwner) {
@@ -162,7 +148,6 @@ class WebCredentialItemDialogFragment : DialogFragment() {
             dismiss()
         }
         viewModel.refreshEvent.observeEvent(viewLifecycleOwner) {
-            Log.d("MGG3", "Refreshhhhhiiiiing")
             refreshViewModel.refresh()
         }
         viewModel.hideKeyboardEvent.observeEvent(viewLifecycleOwner) {

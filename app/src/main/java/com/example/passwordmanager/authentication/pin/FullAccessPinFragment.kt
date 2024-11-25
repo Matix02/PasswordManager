@@ -2,7 +2,6 @@ package com.example.passwordmanager.authentication.pin
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,7 +59,6 @@ class FullAccessPinFragment : Fragment() {
     private fun observeEvents() {
         viewModel.showSuccessfulSnackbarEvent.observeEvent(viewLifecycleOwner) {
             Snackbar.make(binding.root, "Przyznano God-Mode!", Snackbar.LENGTH_SHORT).show()
-            Log.d("MGG3", "showSuccessfullEvent")
             setFragmentResult(WebCredentialItemDialogFragment.REQUEST_KEY, bundleOf(WebCredentialItemDialogFragment.RESULT_KEY to true))
             findNavController().navigateUp()
         }

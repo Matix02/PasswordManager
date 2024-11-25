@@ -1,6 +1,5 @@
 package com.example.passwordmanager
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,19 +19,28 @@ class MainViewModel @Inject constructor(
 
     val viewState: LiveData<SearchQueryViewState> = MutableLiveData(SearchQueryViewState())
     val selectQuery: LiveData<Event<String>> = MutableLiveData()
+    val navigateToAddCredentialItemEvent: LiveData<Event<Unit>> = MutableLiveData()
+    val showNoAccessSnackbarEvent: LiveData<Event<Unit>> = MutableLiveData()
 
     fun loadData() {
         viewModelScope.launch {
             val queries = queryCacheRepository.getQueryCacheList()
             queries?.let { viewState.updateValue(SearchQueryViewState(queries)) }
-            Log.d("MGG3", "Queries = $queries")
+        }
+    }
+
+    fun tryToNavigateToAddCredentialItem() {
+        viewModelScope.launch {
+            if (userStatusDataStoreRepository.isAdmin()) {
+                navigateToAddCredentialItemEvent.updateValue(Event(Unit))
+            } else {
+                showNoAccessSnackbarEvent.updateValue(Event(Unit))
+            }
         }
     }
 
     fun clearUserStatusData() {
         viewModelScope.launch {
-            val isAdmin = userStatusDataStoreRepository.isAdmin()
-            Log.d("MGG3", "OnDestroy, $isAdmin")
             userStatusDataStoreRepository.clearData()
         }
     }

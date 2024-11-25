@@ -31,7 +31,6 @@ class WebDetailsRepository @Inject constructor(
     private val webDetailsDataMapper = WebDetailsDataTransformer() //inject this too
 
     override suspend fun getWebDetailsList(): List<WebDetails> {
-        Log.d("MGG3", "START getWebDetailsList")
         return try {
             val querySnapshot = db.collection(WEB_DETAILS_COLLECTION_NAME).get().await()
             if (querySnapshot.isEmpty.not()) {
@@ -46,7 +45,6 @@ class WebDetailsRepository @Inject constructor(
     }
 
     override suspend fun findCredentialsBy(query: String): List<WebDetails> {
-        Log.d("MGG3", "START getWebDetailsList")
         return try {
             val querySnapshot = db.collection(WEB_DETAILS_COLLECTION_NAME).get().await()
 
@@ -65,10 +63,8 @@ class WebDetailsRepository @Inject constructor(
         db.collection(WEB_DETAILS_COLLECTION_NAME)
             .add(webCredential)
             .addOnSuccessListener {
-                Log.d("MGG3", "Successful of adding the Item")
             }
             .addOnFailureListener {
-                Log.d("MGG3", "Failure of adding the Item")
             }
     }
 
@@ -82,16 +78,12 @@ class WebDetailsRepository @Inject constructor(
         val id = db.collection(WEB_DETAILS_COLLECTION_NAME).whereEqualTo("name", oldIndexName)
             .get().await().documents.map { it.id }.takeIf { it.isNotEmpty() }?.first()
 
-        Log.d("MGG3", "FoundNextOne = $id")
-
         id?.let {
             db.collection(WEB_DETAILS_COLLECTION_NAME).document(id)
                 .set(item)
                 .addOnSuccessListener {
-                    Log.d("MGG3", "Successful of updating the Item")
                 }
                 .addOnFailureListener {
-                    Log.d("MGG3", "Failure of updating  the Item")
                 }
         } ?: Log.d("MGG3", "Id is null")
     }

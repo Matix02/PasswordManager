@@ -3,12 +3,12 @@ package com.example.passwordmanager.webDetailsList
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.passwordmanager.authentication.pin.UserStatusDataStoreRepository
 import com.example.passwordmanager.extension.Event
 import com.example.passwordmanager.extension.update
 import com.example.passwordmanager.extension.updateValue
@@ -20,7 +20,8 @@ import javax.inject.Inject
 
 class WebDetailsListViewModel @Inject constructor(
     private val webDetailsRepository: WebDetailsRepository,
-    private val queryCacheRepository: QueryCacheDataRepository
+    private val queryCacheRepository: QueryCacheDataRepository,
+    private val userStatusDataStoreRepository: UserStatusDataStoreRepository
 ) : ViewModel() {
 
     val viewState: LiveData<WebCredentialsViewState> = MutableLiveData(WebCredentialsViewState())
@@ -33,17 +34,13 @@ class WebDetailsListViewModel @Inject constructor(
             viewState.updateValue(WebCredentialsViewState(isLoading = true))
             fetchData()
             val cachedQueries = queryCacheRepository.getQueryCacheList()
-            Log.d("MGG3", "Queries = $cachedQueries")
         }
     }
 
     //TODO wyświetlić listę zapisanych queriesów, i poprawić layout tej listy
-
     fun refreshData() {
         viewModelScope.launch {
             fetchData()
-            Log.d("MGG3Ref", "RefreshData")
-
             cancelRefreshingEvent.updateValue(Event(false))
         }
     }
@@ -57,7 +54,6 @@ class WebDetailsListViewModel @Inject constructor(
         viewModelScope.launch {
             val filteredCredentials = webDetailsRepository.findCredentialsBy(query)
             val originalQuery = queryCacheRepository.findQuery(query)
-            Log.d("MGG3", "What have I found = $originalQuery")
             queryCacheRepository.deleteQuery(originalQuery)
             queryCacheRepository.saveQuery(query)
             if (filteredCredentials.isNotEmpty()) { //TODO
@@ -86,8 +82,12 @@ class WebDetailsListViewModel @Inject constructor(
         showCopiedSnackbar.updateValue(Event(Unit))
     }
 
-    fun navigateToWebItemEdition(webItem: WebDetails) {
-        navigateToWebItemEditionEvent.updateValue(Event(webItem))
+    fun tryToNavigateToWebItemEdition(webItem: WebDetails) {
+        viewModelScope.launch {
+            if (userStatusDataStoreRepository.isAdmin()) {
+                navigateToWebItemEditionEvent.updateValue(Event(webItem))
+            }
+        }
     }
 
     private fun searchExpandedCredentials() {

@@ -2,7 +2,6 @@ package com.example.passwordmanager.webDetailsList
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import com.example.passwordmanager.webDetailsList.view.WebDetailsAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
-
 
 class WebDetailsListFragment : Fragment() {
 
@@ -79,7 +77,6 @@ class WebDetailsListFragment : Fragment() {
             refreshViewModel.updateRefreshingState(it)
         }
         viewModel.navigateToWebItemEditionEvent.observeEvent(viewLifecycleOwner) {
-            Log.d("MGG3", "clicked")
             val bundle = Bundle().apply {
                 with(WebCredentialItemDialogFragment) {
                     putString(CREDENTIAL_ITEM_ID_KEY, it.id)
@@ -98,7 +95,7 @@ class WebDetailsListFragment : Fragment() {
     private fun setUpRecyclerView() {
         credentialsAdapter = WebDetailsAdapter(
             onItemClick = { viewModel.expandCredentials(it) },
-            onLongItemClick = { viewModel.navigateToWebItemEdition(it) },
+            onLongItemClick = { viewModel.tryToNavigateToWebItemEdition(it) },
             onCredentialClick = { viewModel.copyToClipboard(requireContext(), it) }
         )
         binding.webCredentials.adapter = credentialsAdapter

@@ -1,6 +1,5 @@
 package com.example.passwordmanager
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -175,9 +174,7 @@ class WebCredentialItemDialogViewModel @Inject constructor(
         viewModelScope.launch {
             if (isChecked && userDataStoreRepository.isAdmin().not()) {
                 showPinVerificationDialog.updateValue(Event(Unit))
-                Log.d("MGG3", "showPinVer")
             } else {
-                Log.d("MGG3", "update beacfuse else")
                 updateBelongToAdminAccess(isChecked)
             }
         }

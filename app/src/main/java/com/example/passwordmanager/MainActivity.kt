@@ -3,7 +3,6 @@ package com.example.passwordmanager
 import android.app.KeyguardManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -23,6 +22,7 @@ import com.example.passwordmanager.databinding.ActivityMainBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.AndroidInjection
 import java.util.concurrent.Executor
 import javax.inject.Inject
@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         setUpListeners()
         setUpRecyclerView()
         observeViewModel()
+        observeEvents()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -86,21 +87,24 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.fullAccess -> {
                 checkBiometric()
-                Log.d("MGG3", "BIOOOOmetric")
                 true
             }
 
             R.id.secretAccess -> {
                 // navController.navigate(NavGraphDirections.mainActivityToFullAccessPinFragment())
-                alertPinDialog = DialogBuilder.create(
-                    this,
-                    onPositiveButtonClick = { mainViewModel.checkPinForDialog(it) }
-                )
+                showAuthorizationDialog()
                 true
             }
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showAuthorizationDialog() {
+        alertPinDialog = DialogBuilder.create(
+            this,
+            onPositiveButtonClick = { mainViewModel.checkPinForDialog(it) }
+        )
     }
 
     private fun setUpListeners() {
@@ -117,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.floatingActionButton.setOnClickListener {
-            showDialog()
+            mainViewModel.tryToNavigateToAddCredentialItem()
         }
     }
 
@@ -135,13 +139,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun observeEvents() {
+        mainViewModel.navigateToAddCredentialItemEvent.observe(this) {
+            showDialog()
+        }
+        mainViewModel.showNoAccessSnackbarEvent.observe(this) {
+            Snackbar
+                .make(binding.root, "Nie masz dostępu!", Snackbar.LENGTH_LONG)
+                .setAction("Autoryzuj") { showAuthorizationDialog() }
+                .show()
+        }
+    }
+
     private fun setUpRecyclerView() {
         queryCacheAdapter = CacheQueryAdapter {
             refreshViewModel.findItems(it.query)
             binding.searchBar.setText(it.query)
             binding.searchView.hide()
             mainViewModel.loadData()
-            Log.d("MGG3", "Clicked ${it.id}")
         }
         binding.cacheQueries.adapter = queryCacheAdapter
         val divider = MaterialDividerItemDecoration(this, LinearLayoutManager.VERTICAL)
