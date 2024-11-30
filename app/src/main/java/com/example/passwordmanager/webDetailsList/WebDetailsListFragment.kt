@@ -50,14 +50,6 @@ class WebDetailsListFragment : Fragment() {
         observeData()
     }
 
-    private fun filterData(searchQuery: String) {
-        if (searchQuery.isNotEmpty()) { //TODO czy tu powinno być sprawdzane czy empty, czy poprzez eventy
-            viewModel.filterCredentialsByFirestore(searchQuery)
-        } else {
-            viewModel.loadData()
-        }
-    }
-
     private fun observeData() {
         viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
             credentialsAdapter.submitList(viewState.credentials)
@@ -67,14 +59,14 @@ class WebDetailsListFragment : Fragment() {
         viewModel.showCopiedSnackbar.observeEvent(viewLifecycleOwner) {
             Snackbar.make(binding.root, "Skopiowano!", Snackbar.LENGTH_SHORT).show()
         }
-        refreshViewModel.filterListEvent.observeEvent(viewLifecycleOwner) {
-            filterData(it)
+        refreshViewModel.refreshListEvent.observeEvent(viewLifecycleOwner) {
+            viewModel.filterData(it)
         }
         refreshViewModel.refreshListEvent.observeEvent(viewLifecycleOwner) {
-            viewModel.refreshData()
+            viewModel.refreshData(it)
         }
-        viewModel.cancelRefreshingEvent.observeEvent(viewLifecycleOwner) {
-            refreshViewModel.updateRefreshingState(it)
+        viewModel.showRefreshEvent.observeEvent(viewLifecycleOwner) {
+            refreshViewModel.updateRefreshingStatus(it)
         }
         viewModel.navigateToWebItemEditionEvent.observeEvent(viewLifecycleOwner) {
             val bundle = Bundle().apply {

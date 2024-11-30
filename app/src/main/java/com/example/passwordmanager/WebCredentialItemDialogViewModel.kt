@@ -190,7 +190,7 @@ class WebCredentialItemDialogViewModel @Inject constructor(
 
     fun checkPin(input: String, additionalAction: (Boolean) -> Unit): Boolean {
         return (if (input == BuildConfig.ADMIN_KEY) { //TODO shared this key across the app
-            viewModelScope.launch { userDataStoreRepository.updateStatus() }
+            viewModelScope.launch { userDataStoreRepository.setAdminStatus() }
             true
         } else {
             false

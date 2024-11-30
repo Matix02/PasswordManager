@@ -15,7 +15,7 @@ import javax.inject.Singleton
         FragmentBuilder::class,
         ViewModelModule::class,
         RepositoryModule::class,
-        NetworkProvidersModule::class,
+        NetworkModule::class,
         DataStoreModule::class
     ]
 )

@@ -6,16 +6,14 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 interface UserStatusDataStoreRepository {
-    suspend fun updateStatus()
+    suspend fun setAdminStatus()
     suspend fun isAdmin(): Boolean
     suspend fun clearData()
 }
 
-class UserDataStoreRepository @Inject constructor(
-    private val dataStore: DataStore<UserStatus>
-) : UserStatusDataStoreRepository {
+class UserDataStoreRepository @Inject constructor(private val dataStore: DataStore<UserStatus>) : UserStatusDataStoreRepository {
 
-    override suspend fun updateStatus() {
+    override suspend fun setAdminStatus() {
         dataStore.updateData {
             it.toBuilder().setIsPermissionGranted(true).build()
         }

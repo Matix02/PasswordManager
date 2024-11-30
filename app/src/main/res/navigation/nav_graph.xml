@@ -18,20 +18,8 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-
-        <action
-            android:id="@+id/action_webCredentialItemDialogFragment_to_fullAccessPinFragment"
-            app:destination="@+id/fullAccessPinFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-
+        
     </fragment>
-
-    <fragment
-        android:id="@+id/fullAccessPinFragment"
-        android:name="com.example.passwordmanager.authentication.pin.FullAccessPinFragment" />
 
     <fragment
         android:id="@+id/webCredentialItemDialogFragment"
@@ -42,9 +30,5 @@
     <action
         android:id="@+id/main_activity_to_add_details_web_item_fragment"
         app:destination="@+id/addDetailsWebItemFragment" />
-
-    <action
-        android:id="@+id/main_activity_to_full_access_pin_fragment"
-        app:destination="@+id/fullAccessPinFragment" />
 
 </navigation>

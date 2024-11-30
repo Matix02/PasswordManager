@@ -148,7 +148,7 @@ class WebCredentialItemDialogFragment : DialogFragment() {
             dismiss()
         }
         viewModel.refreshEvent.observeEvent(viewLifecycleOwner) {
-            refreshViewModel.refresh()
+            refreshViewModel.refreshCredentialList()
         }
         viewModel.hideKeyboardEvent.observeEvent(viewLifecycleOwner) {
             binding.root.clearFocus()

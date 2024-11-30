@@ -12,27 +12,20 @@ import javax.inject.Singleton
 private const val QUERY_CACHE_DATABASE_NAME = "QueryCacheDatabase"
 
 @Module
-class NetworkProvidersModule {
+class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseFirestoreDatabase() = FirebaseFirestore.getInstance()
-
-
-    @Singleton
-    @Provides
-    fun provideCacheRoomDatabase(queryCacheDatabase: QueryCacheDatabase): QueryCacheDataDao {
-        return queryCacheDatabase.queryCacheDao()
-    }
+    fun provideFirebase() = FirebaseFirestore.getInstance()
 
     @Singleton
     @Provides
-    fun provideAppDatabase(application: MyApplication): QueryCacheDatabase {
-        return Room.databaseBuilder(
-            application,
-            QueryCacheDatabase::class.java,
-            QUERY_CACHE_DATABASE_NAME
-        ).build()
+    fun provideSearchQueryDataAccessObject(database: QueryCacheDatabase): QueryCacheDataDao = database.queryCacheDao()
+
+    @Singleton
+    @Provides
+    fun provideSearchQueryDatabase(application: MyApplication): QueryCacheDatabase {
+        return Room.databaseBuilder(application, QueryCacheDatabase::class.java, QUERY_CACHE_DATABASE_NAME).build()
     }
 
 }

@@ -25,7 +25,7 @@ class WebDetailsListViewModel @Inject constructor(
 ) : ViewModel() {
 
     val viewState: LiveData<WebCredentialsViewState> = MutableLiveData(WebCredentialsViewState())
-    val cancelRefreshingEvent: LiveData<Event<Boolean>> = MutableLiveData()
+    val showRefreshEvent: LiveData<Event<Boolean>> = MutableLiveData()
     val navigateToWebItemEditionEvent: LiveData<Event<WebDetails>> = MutableLiveData()
     val showCopiedSnackbar: LiveData<Event<Unit>> = MutableLiveData()
 
@@ -33,15 +33,21 @@ class WebDetailsListViewModel @Inject constructor(
         viewModelScope.launch {
             viewState.updateValue(WebCredentialsViewState(isLoading = true))
             fetchData()
-            val cachedQueries = queryCacheRepository.getQueryCacheList()
         }
     }
 
-    //TODO wyświetlić listę zapisanych queriesów, i poprawić layout tej listy
-    fun refreshData() {
+    fun refreshData(searchQuery: String) {
         viewModelScope.launch {
-            fetchData()
-            cancelRefreshingEvent.updateValue(Event(false))
+            filterData(searchQuery)
+            showRefreshEvent.updateValue(Event(false))
+        }
+    }
+
+    fun filterData(searchQuery: String) {
+        if (searchQuery.isNotEmpty()) {
+            filterCredentialsByFirestore(searchQuery)
+        } else {
+            loadData()
         }
     }
 
@@ -50,14 +56,15 @@ class WebDetailsListViewModel @Inject constructor(
         viewState.updateValue(WebCredentialsViewState(credentials = webCredentialsDetailsList))
     }
 
-    fun filterCredentialsByFirestore(query: String) {
+    private fun filterCredentialsByFirestore(query: String) {
         viewModelScope.launch {
+            setLoading(true)
             val filteredCredentials = webDetailsRepository.findCredentialsBy(query)
-            val originalQuery = queryCacheRepository.findQuery(query)
-            queryCacheRepository.deleteQuery(originalQuery)
             queryCacheRepository.saveQuery(query)
-            if (filteredCredentials.isNotEmpty()) { //TODO
-                viewState.update { it.copy(credentials = filteredCredentials) }
+            if (filteredCredentials.isNotEmpty()) {
+                viewState.updateValue(WebCredentialsViewState(credentials = filteredCredentials))
+            } else {
+                viewState.updateValue(WebCredentialsViewState())
             }
         }
     }
@@ -99,6 +106,9 @@ class WebDetailsListViewModel @Inject constructor(
         }
     }
 
+    private fun setLoading(isLoading: Boolean) {
+        viewState.update { it.copy(isLoading = isLoading) }
+    }
 }
 
 data class WebCredentialsViewState(

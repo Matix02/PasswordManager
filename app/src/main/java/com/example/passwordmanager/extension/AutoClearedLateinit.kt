@@ -8,9 +8,10 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 class AutoClearedLateinit<T : Any>(
-    lifecycleOwner: LifecycleOwner,
-    private val onClear: T.() -> Unit
+    private val onClear: T.() -> Unit,
+    lifecycleOwner: LifecycleOwner
 ) : ReadWriteProperty<LifecycleOwner, T>, DefaultLifecycleObserver {
+
     private var _value: T? = null
 
     init {
@@ -18,8 +19,7 @@ class AutoClearedLateinit<T : Any>(
     }
 
     override fun getValue(thisRef: LifecycleOwner, property: KProperty<*>): T {
-        return _value
-            ?: throw java.lang.IllegalStateException("auto_cleared-lateinit_value get is not available")
+        return _value ?: throw java.lang.IllegalStateException("Auto Cleared Lateinit Value Get is not available")
     }
 
     override fun setValue(thisRef: LifecycleOwner, property: KProperty<*>, value: T) {
@@ -32,6 +32,6 @@ class AutoClearedLateinit<T : Any>(
     }
 }
 
-fun <T : Any> Fragment.autoClearedLateinit(onClear: T.() -> Unit = {}) = AutoClearedLateinit(this, onClear)
+fun <T : Any> Fragment.autoClearedLateinit(onClear: T.() -> Unit = {}) = AutoClearedLateinit(onClear = onClear, lifecycleOwner = this)
 
-fun <T : Any> AppCompatActivity.autoClearedLateinit(onClear: T.() -> Unit = {}) = AutoClearedLateinit(this, onClear)
+fun <T : Any> AppCompatActivity.autoClearedLateinit(onClear: T.() -> Unit = {}) = AutoClearedLateinit(onClear = onClear, lifecycleOwner = this)

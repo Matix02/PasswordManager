@@ -9,11 +9,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object DialogBuilder {
 
-    fun create(
-        context: Context,
-        onPositiveButtonClick: (String) -> Boolean,
-        onCancelListener: (() -> Unit)? = null
-    ): AlertDialog {
+    fun create(context: Context, onPositiveButtonClick: (String) -> Boolean, onCancelListener: (() -> Unit)? = null): AlertDialog {
         val binding = DialogTextInputBinding.inflate(LayoutInflater.from(context))
 
         val dialog = MaterialAlertDialogBuilder(context).apply {

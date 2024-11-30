@@ -8,9 +8,9 @@ import com.example.passwordmanager.databinding.ItemCacheQueryBinding
 import com.example.passwordmanager.extension.inflater
 import com.example.passwordmanager.webDetailsList.model.QueryData
 
-class CacheQueryAdapter(
+class SearchQueryAdapter(
     private val onItemClick: (QueryData) -> Unit,
-) : ListAdapter<QueryData, CacheQueryAdapter.CacheQueryItemViewHolder>(QueryItemDiffCallback) {
+) : ListAdapter<QueryData, SearchQueryAdapter.CacheQueryItemViewHolder>(QueryItemDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CacheQueryItemViewHolder {
         return CacheQueryItemViewHolder(ItemCacheQueryBinding.inflate(parent.inflater(), parent, false), onItemClick)

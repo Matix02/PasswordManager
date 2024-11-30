@@ -15,20 +15,14 @@ class RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideQueryCacheRepository(queryDataRepository: QueryDataRepository): QueryCacheDataRepository {
-        return queryDataRepository
-    }
+    fun provideSearchQueryRepository(queryDataRepository: QueryDataRepository): QueryCacheDataRepository = queryDataRepository
 
     @Singleton
     @Provides
-    fun provideWebDetailsListRepository(webDetailsRepository: WebDetailsRepository): WebCredentialsDetailsRepository {
-        return webDetailsRepository
-    }
+    fun provideCredentialListRepository(webDetailsRepository: WebDetailsRepository): WebCredentialsDetailsRepository = webDetailsRepository
 
     @Singleton
     @Provides
-    fun provideUserDataStoreRepository(userDataStoreRepository: UserDataStoreRepository): UserStatusDataStoreRepository {
-        return userDataStoreRepository
-    }
+    fun provideUserStatusDataStoreRepository(userDataStoreRepository: UserDataStoreRepository): UserStatusDataStoreRepository = userDataStoreRepository
 
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.passwordmanager.authentication.pin.UserStatusDataStoreRepository
 import com.example.passwordmanager.extension.Event
+import com.example.passwordmanager.extension.update
 import com.example.passwordmanager.extension.updateValue
 import com.example.passwordmanager.webDetailsList.data.QueryCacheDataRepository
 import com.example.passwordmanager.webDetailsList.model.QueryData
@@ -18,14 +19,24 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val viewState: LiveData<SearchQueryViewState> = MutableLiveData(SearchQueryViewState())
-    val selectQuery: LiveData<Event<String>> = MutableLiveData()
     val navigateToAddCredentialItemEvent: LiveData<Event<Unit>> = MutableLiveData()
     val showNoAccessSnackbarEvent: LiveData<Event<Unit>> = MutableLiveData()
 
-    fun loadData() {
+    init {
+        showAddCredentialFab()
+    }
+
+    fun fetchSearchQueryList() {
         viewModelScope.launch {
             val queries = queryCacheRepository.getQueryCacheList()
-            queries?.let { viewState.updateValue(SearchQueryViewState(queries)) }
+            viewState.updateValue(SearchQueryViewState(queries))
+        }
+    }
+
+    fun updateCredentialList(input: String) {
+        viewModelScope.launch {
+            val searchList = queryCacheRepository.fetchCommonQueries(input)
+            viewState.updateValue(SearchQueryViewState(searchList))
         }
     }
 
@@ -39,23 +50,29 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun clearUserStatusData() {
+    fun clearPersistenceUserAccess() {
         viewModelScope.launch {
             userStatusDataStoreRepository.clearData()
         }
     }
 
-    fun checkPinForDialog(input: String): Boolean {
-        return if (input == BuildConfig.ADMIN_KEY) { //TODO shared this key across the app
-            viewModelScope.launch { userStatusDataStoreRepository.updateStatus() }
+    fun verifyAccessPin(pinInput: String): Boolean {
+        return if (pinInput == BuildConfig.ADMIN_KEY) { //TODO shared this key across the app
+            viewModelScope.launch { userStatusDataStoreRepository.setAdminStatus() }
             true
         } else {
             false
         }
     }
 
+    fun showAddCredentialFab() {
+        viewState.update {
+            it.copy(isFabVisible = true)
+        }
+    }
 }
 
 data class SearchQueryViewState(
-    val queryList: List<QueryData> = emptyList()
+    val queryList: List<QueryData> = emptyList(),
+    val isFabVisible: Boolean = false
 )

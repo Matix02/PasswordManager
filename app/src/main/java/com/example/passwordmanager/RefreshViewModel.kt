@@ -9,21 +9,24 @@ import javax.inject.Inject
 
 class RefreshViewModel @Inject constructor() : ViewModel() {
 
-    val refreshingState: LiveData<Boolean> = MutableLiveData(false)
-    val filterListEvent: LiveData<Event<String>> = MutableLiveData()
-    val refreshListEvent: LiveData<Event<Unit>> = MutableLiveData()
+    val refreshingStatusEvent: LiveData<Boolean> = MutableLiveData(false)
+    val refreshListEvent: LiveData<Event<String>> = MutableLiveData()
 
-    fun findItems(searchQuery: String) {
-        (filterListEvent as MutableLiveData<Event<String>>).value = Event(searchQuery)
+    fun getCredentials(searchQuery: String) {
+        refreshList(searchQuery)
     }
 
-    fun refresh() {
-        refreshingState.updateValue(true)
-        (refreshListEvent as MutableLiveData<Event<Unit>>).value = Event(Unit)
+    fun refreshCredentialList(query: String = "") {
+        refreshingStatusEvent.updateValue(true)
+        getCredentials(query)
     }
 
-    fun updateRefreshingState(isRefreshing: Boolean) {
-        refreshingState.updateValue(isRefreshing)
+    fun updateRefreshingStatus(isRefreshing: Boolean) {
+        refreshingStatusEvent.updateValue(isRefreshing)
+    }
+
+    private fun refreshList(query: String) {
+        (refreshListEvent as MutableLiveData<Event<String>>).value = Event(query)
     }
 
 }

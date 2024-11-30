@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -22,27 +23,24 @@ import com.example.passwordmanager.databinding.ActivityMainBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.google.android.material.search.SearchView
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.AndroidInjection
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
-
 class MainActivity : AppCompatActivity() {
-
-    private val refreshViewModel: RefreshViewModel by viewModels()
-
-    private lateinit var mainViewModel: MainViewModel
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val refreshViewModel: RefreshViewModel by viewModels()
+    private lateinit var viewModel: MainViewModel
 
-    private var queryCacheAdapter by autoClearedLateinit<CacheQueryAdapter>()
-    private var alertPinDialog: AlertDialog? by autoClearedAlertDialog()
+    private var searchQueryAdapter by autoClearedLateinit<SearchQueryAdapter>()
+    private var binding by autoClearedLateinit<ActivityMainBinding>()
+    private var fullAccessDialog: AlertDialog? by autoClearedAlertDialog()
 
     private lateinit var navController: NavController
-    private var binding by autoClearedLateinit<ActivityMainBinding>()
-
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
@@ -53,17 +51,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragmentContainer) as NavHostFragment
-        navController = navHostFragment.findNavController()
-        // val appBarConfiguration = AppBarConfiguration(navController.graph)
-        //   binding.searchBar.setupWithNavController(navController, appBarConfiguration)
+        setUpNavigationController()
         setSupportActionBar(binding.searchBar)
-        // setupActionBarWithNavController(navController, appBarConfiguration)
-        mainViewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
-        mainViewModel.loadData()
+        setUpViewModel()
         setUpListeners()
-        setUpRecyclerView()
+        setRecentSearchQueryView()
         observeViewModel()
         observeEvents()
     }
@@ -75,102 +67,111 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        mainViewModel.clearUserStatusData()
+        viewModel.clearPersistenceUserAccess()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mainViewModel.clearUserStatusData()
+        viewModel.clearPersistenceUserAccess()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.fullAccess -> {
+    override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.authorizationAccess -> {
                 checkBiometric()
                 true
             }
-
             R.id.secretAccess -> {
-                // navController.navigate(NavGraphDirections.mainActivityToFullAccessPinFragment())
-                showAuthorizationDialog()
+                showAdminAuthorizationDialog()
                 true
             }
-
-            else -> super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(menuItem)
         }
     }
 
-    private fun showAuthorizationDialog() {
-        alertPinDialog = DialogBuilder.create(
-            this,
-            onPositiveButtonClick = { mainViewModel.checkPinForDialog(it) }
+    private fun setUpViewModel() {
+        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+    }
+
+    private fun setUpNavigationController() {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragmentContainer) as NavHostFragment
+        navController = navHostFragment.findNavController()
+    }
+
+    private fun showAdminAuthorizationDialog() {
+        fullAccessDialog = DialogBuilder.create(
+            context = this,
+            onPositiveButtonClick = { viewModel.verifyAccessPin(it) }
         )
     }
 
     private fun setUpListeners() {
+        binding.searchView.addTransitionListener { _, _, searchViewState ->
+            when (searchViewState) {
+                SearchView.TransitionState.SHOWING -> viewModel.fetchSearchQueryList()
+                SearchView.TransitionState.HIDING -> viewModel.showAddCredentialFab()
+                SearchView.TransitionState.HIDDEN,
+                SearchView.TransitionState.SHOWN -> Unit
+            }
+        }
         binding.searchView.editText.setOnEditorActionListener { _, _, _ ->
-            val queryText = binding.searchView.text
-            refreshViewModel.findItems(queryText.toString())
-            binding.searchBar.setText(queryText)
-            binding.searchView.hide()
-            mainViewModel.loadData()
+            val query = binding.searchView.text.toString()
+            updateCredentialList(query)
+            viewModel.updateCredentialList(query)
             return@setOnEditorActionListener true
         }
-        binding.layoutSwipeRefresh.setOnRefreshListener {
-            refreshViewModel.refresh()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshViewModel.refreshCredentialList(binding.searchBar.text.toString())
         }
-
-        binding.floatingActionButton.setOnClickListener {
-            mainViewModel.tryToNavigateToAddCredentialItem()
+        binding.addFloatingActionButton.setOnClickListener {
+            viewModel.tryToNavigateToAddCredentialItem()
         }
-    }
-
-    private fun showDialog() {
-        val dialogFragment = WebCredentialItemDialogFragment()
-        dialogFragment.show(supportFragmentManager, "WebCredentialDialog")
     }
 
     private fun observeViewModel() {
-        refreshViewModel.refreshingState.observe(this) { isRefreshing ->
-            binding.layoutSwipeRefresh.isRefreshing = isRefreshing
+        refreshViewModel.refreshingStatusEvent.observe(this) { isRefreshing ->
+            binding.swipeRefreshLayout.isRefreshing = isRefreshing
         }
-        mainViewModel.viewState.observe(this) {
-            queryCacheAdapter.submitList(it.queryList)
+        viewModel.viewState.observe(this) {
+            searchQueryAdapter.submitList(it.queryList)
+            binding.addFloatingActionButton.isVisible = it.isFabVisible
         }
     }
 
     private fun observeEvents() {
-        mainViewModel.navigateToAddCredentialItemEvent.observe(this) {
-            showDialog()
+        viewModel.navigateToAddCredentialItemEvent.observe(this) {
+            showAddCredentialDialog()
         }
-        mainViewModel.showNoAccessSnackbarEvent.observe(this) {
+        viewModel.showNoAccessSnackbarEvent.observe(this) {
             Snackbar
                 .make(binding.root, "Nie masz dostępu!", Snackbar.LENGTH_LONG)
-                .setAction("Autoryzuj") { showAuthorizationDialog() }
+                .setAction("Autoryzuj") { showAdminAuthorizationDialog() }
                 .show()
         }
     }
 
-    private fun setUpRecyclerView() {
-        queryCacheAdapter = CacheQueryAdapter {
-            refreshViewModel.findItems(it.query)
-            binding.searchBar.setText(it.query)
-            binding.searchView.hide()
-            mainViewModel.loadData()
-        }
-        binding.cacheQueries.adapter = queryCacheAdapter
+    private fun showAddCredentialDialog() {
+        WebCredentialItemDialogFragment().show(supportFragmentManager, "WebCredentialDialog")
+    }
+
+    private fun setRecentSearchQueryView() {
+        searchQueryAdapter = SearchQueryAdapter { updateCredentialList(it.query) }
+        binding.searchQueryList.adapter = searchQueryAdapter
         val divider = MaterialDividerItemDecoration(this, LinearLayoutManager.VERTICAL)
-        binding.cacheQueries.addItemDecoration(divider)
+        binding.searchQueryList.addItemDecoration(divider)
+    }
+
+    private fun updateCredentialList(query: String) {
+        refreshViewModel.getCredentials(query)
+        binding.searchBar.setText(query)
+        binding.searchView.hide()
     }
 
     private fun checkBiometric() {
         executor = ContextCompat.getMainExecutor(this)
         biometricPrompt = BiometricPrompt(this, executor,
             object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(
-                    errorCode: Int,
-                    errString: CharSequence
-                ) {
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
                     Toast.makeText(applicationContext, "Authentication error: $errString", Toast.LENGTH_SHORT).show()
                     //jak się wywali, to ma to zrobić na loadingu w tle, nie pokazując zawartości i wyłączyć apkę

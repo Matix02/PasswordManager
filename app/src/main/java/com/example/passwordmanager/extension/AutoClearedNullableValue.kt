@@ -1,6 +1,5 @@
 package com.example.passwordmanager.extension
 
-import android.app.Dialog
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -11,8 +10,9 @@ import kotlin.reflect.KProperty
 
 class AutoClearedNullableValue<T : Any>(
     lifecycleOwner: LifecycleOwner,
-    private val onDestroy: (T?) -> Unit = {}
+    private val onDestroy: (T?) -> Unit
 ) : ReadWriteProperty<LifecycleOwner, T?>, DefaultLifecycleObserver {
+
     private var _value: T? = null
 
     init {
@@ -31,18 +31,10 @@ class AutoClearedNullableValue<T : Any>(
     }
 }
 
-fun Fragment.autoClearedDialog() = AutoClearedNullableValue<Dialog>(this) {
-    it?.dismiss()
-}
-
 fun Fragment.autoClearedAlertDialog() = AutoClearedNullableValue<AlertDialog>(this) {
     it?.dismiss()
 }
 
 fun AppCompatActivity.autoClearedAlertDialog() = AutoClearedNullableValue<AlertDialog>(this) {
-    it?.dismiss()
-}
-
-fun AppCompatActivity.autoClearedDialog() = AutoClearedNullableValue<Dialog>(this) {
     it?.dismiss()
 }
