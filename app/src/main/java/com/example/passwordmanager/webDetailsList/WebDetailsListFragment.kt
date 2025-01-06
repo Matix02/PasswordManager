@@ -54,13 +54,10 @@ class WebDetailsListFragment : Fragment() {
         viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
             credentialsAdapter.submitList(viewState.credentials)
             binding.progressIndicator.isVisible = viewState.isLoading
-            binding.asdasdasdasd.root.isVisible = viewState.isRefreshingButtonVisible
+            binding.placeholderView.root.isVisible = viewState.isRefreshingButtonVisible
         }
-        viewModel.showCopiedSnackbar.observeEvent(viewLifecycleOwner) {
+        viewModel.showCopiedSnackbarEvent.observeEvent(viewLifecycleOwner) {
             Snackbar.make(binding.root, "Skopiowano!", Snackbar.LENGTH_SHORT).show()
-        }
-        refreshViewModel.refreshListEvent.observeEvent(viewLifecycleOwner) {
-            viewModel.filterData(it)
         }
         refreshViewModel.refreshListEvent.observeEvent(viewLifecycleOwner) {
             viewModel.refreshData(it)

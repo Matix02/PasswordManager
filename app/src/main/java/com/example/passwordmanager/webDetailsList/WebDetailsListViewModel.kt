@@ -27,7 +27,7 @@ class WebDetailsListViewModel @Inject constructor(
     val viewState: LiveData<WebCredentialsViewState> = MutableLiveData(WebCredentialsViewState())
     val showRefreshEvent: LiveData<Event<Boolean>> = MutableLiveData()
     val navigateToWebItemEditionEvent: LiveData<Event<WebDetails>> = MutableLiveData()
-    val showCopiedSnackbar: LiveData<Event<Unit>> = MutableLiveData()
+    val showCopiedSnackbarEvent: LiveData<Event<Unit>> = MutableLiveData()
 
     fun loadData() {
         viewModelScope.launch {
@@ -86,7 +86,7 @@ class WebDetailsListViewModel @Inject constructor(
     fun copyToClipboard(context: Context, credentialInput: String) {
         val clipboardManager = ContextCompat.getSystemService(context, ClipboardManager::class.java)
         clipboardManager?.setPrimaryClip(ClipData.newPlainText("Copied Credential", credentialInput))
-        showCopiedSnackbar.updateValue(Event(Unit))
+        showCopiedSnackbarEvent.updateValue(Event(Unit))
     }
 
     fun tryToNavigateToWebItemEdition(webItem: WebDetails) {

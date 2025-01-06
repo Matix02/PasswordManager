@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.passwordmanager.MainViewModel
 import com.example.passwordmanager.WebCredentialItemDialogViewModel
+import com.example.passwordmanager.authentication.pin.PinLoginViewModel
 import com.example.passwordmanager.webDetailsList.WebDetailsListViewModel
 import dagger.Binds
 import dagger.MapKey
@@ -31,6 +32,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(WebCredentialItemDialogViewModel::class)
     abstract fun webCredentialItemDialogViewModel(viewModel: WebCredentialItemDialogViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PinLoginViewModel::class)
+    abstract fun pinLoginViewModel(viewModel: PinLoginViewModel): ViewModel
 
 }
 

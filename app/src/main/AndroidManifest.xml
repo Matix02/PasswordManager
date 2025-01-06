@@ -3,6 +3,7 @@
     package="com.example.passwordmanager">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <application
         android:name=".MyApplication"
@@ -21,10 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".authentication.basicbiometric.BiometricAuthenticationActivity"
-            android:exported="true" />
 
     </application>
 

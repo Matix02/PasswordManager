@@ -2,15 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/authorizationAccess"
-        android:contentDescription="upgrade account"
-        android:title="Autoryzuj"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/secretAccess"
         android:contentDescription="upgrade account"
         android:title="Secret Access todo"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/todoFeature"
+        android:contentDescription="upgrade account"
+        android:title="Test feature"
         app:showAsAction="never" />
 
 </menu>

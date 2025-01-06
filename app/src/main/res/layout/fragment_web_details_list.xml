@@ -23,7 +23,7 @@
         app:showAnimationBehavior="inward" />
 
     <include
-        android:id="@+id/asdasdasdasd"
+        android:id="@+id/placeholderView"
         layout="@layout/empty_state_list_layout" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

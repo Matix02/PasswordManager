@@ -18,12 +18,18 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-        
+
     </fragment>
 
     <fragment
         android:id="@+id/webCredentialItemDialogFragment"
         android:name="com.example.passwordmanager.WebCredentialItemDialogFragment">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/pinLoginFragment"
+        android:name="com.example.passwordmanager.authentication.pin.PinLoginFragment">
 
     </fragment>
 

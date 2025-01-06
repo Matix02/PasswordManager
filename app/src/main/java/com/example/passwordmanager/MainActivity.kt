@@ -1,17 +1,11 @@
 package com.example.passwordmanager
 
-import android.app.KeyguardManager
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -26,7 +20,6 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.AndroidInjection
-import java.util.concurrent.Executor
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -41,10 +34,6 @@ class MainActivity : AppCompatActivity() {
     private var fullAccessDialog: AlertDialog? by autoClearedAlertDialog()
 
     private lateinit var navController: NavController
-    private lateinit var executor: Executor
-    private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
-    private lateinit var keyguardManager: KeyguardManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -53,6 +42,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setUpNavigationController()
         setSupportActionBar(binding.searchBar)
+        setUpApplicationContent()
+    }
+
+    private fun setUpApplicationContent() {
         setUpViewModel()
         setUpListeners()
         setRecentSearchQueryView()
@@ -67,22 +60,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        viewModel.clearPersistenceUserAccess()
+        // viewModel.clearPersistenceUserAccess()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.clearPersistenceUserAccess()
+        //viewModel.clearPersistenceUserAccess()
     }
 
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
-            R.id.authorizationAccess -> {
-                checkBiometric()
-                true
-            }
             R.id.secretAccess -> {
                 showAdminAuthorizationDialog()
+                true
+            }
+            R.id.todoFeature -> {
+                navController.navigate(R.id.pinLoginFragment)
                 true
             }
             else -> super.onOptionsItemSelected(menuItem)
@@ -166,42 +159,4 @@ class MainActivity : AppCompatActivity() {
         binding.searchBar.setText(query)
         binding.searchView.hide()
     }
-
-    private fun checkBiometric() {
-        executor = ContextCompat.getMainExecutor(this)
-        biometricPrompt = BiometricPrompt(this, executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    Toast.makeText(applicationContext, "Authentication error: $errString", Toast.LENGTH_SHORT).show()
-                    //jak się wywali, to ma to zrobić na loadingu w tle, nie pokazując zawartości i wyłączyć apkę
-                }
-
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    Toast.makeText(applicationContext, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    Toast.makeText(applicationContext, "Authentication failed", Toast.LENGTH_SHORT).show()
-                }
-            })
-
-        promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login for my app")
-            .setSubtitle("Log in using your biometric credential")
-            .apply {
-                keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R && keyguardManager.isDeviceSecure) {
-                    setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-                } else {
-                    setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-                    setNegativeButtonText("Use account password")
-                }
-            }
-            .build()
-        biometricPrompt.authenticate(promptInfo)
-    }
-
 }
