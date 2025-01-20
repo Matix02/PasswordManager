@@ -31,4 +31,8 @@ class PinLoginViewModel @Inject constructor() : ViewModel() {
     private fun String.dropLastChar(): String = this.dropLast(1)
 }
 
-data class PinLoginViewState(val pin: String)
+data class PinLoginViewState(val pin: String) {
+
+    val pinLength
+        get() = pin.length
+}

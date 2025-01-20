@@ -40,7 +40,7 @@ class PinLoginFragment : Fragment() {
 
     private fun observeData() {
         viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            binding.pinView.setPinCircle(viewState.pin.count())
+            binding.pinView.setPinCircle(viewState.pinLength)
         }
     }
 

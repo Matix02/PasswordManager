@@ -8,12 +8,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.passwordmanager.BuildConfig
 import com.example.passwordmanager.authentication.pin.UserStatusDataStoreRepository
 import com.example.passwordmanager.extension.Event
 import com.example.passwordmanager.extension.update
 import com.example.passwordmanager.extension.updateValue
 import com.example.passwordmanager.webDetailsList.data.QueryCacheDataRepository
 import com.example.passwordmanager.webDetailsList.data.WebDetailsRepository
+import com.example.passwordmanager.webDetailsList.model.QueryData
 import com.example.passwordmanager.webDetailsList.model.WebDetails
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,12 +26,17 @@ class WebDetailsListViewModel @Inject constructor(
     private val userStatusDataStoreRepository: UserStatusDataStoreRepository
 ) : ViewModel() {
 
+    val queryViewState: LiveData<SearchQueryViewState> = MutableLiveData(SearchQueryViewState())
     val viewState: LiveData<WebCredentialsViewState> = MutableLiveData(WebCredentialsViewState())
     val showRefreshEvent: LiveData<Event<Boolean>> = MutableLiveData()
     val navigateToWebItemEditionEvent: LiveData<Event<WebDetails>> = MutableLiveData()
     val showCopiedSnackbarEvent: LiveData<Event<Unit>> = MutableLiveData()
 
-    fun loadData() {
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
         viewModelScope.launch {
             viewState.updateValue(WebCredentialsViewState(isLoading = true))
             fetchData()
@@ -43,7 +50,16 @@ class WebDetailsListViewModel @Inject constructor(
         }
     }
 
-    fun filterData(searchQuery: String) {
+    fun verifyAccessPin(pinInput: String): Boolean {
+        return if (pinInput == BuildConfig.ADMIN_KEY) { //TODO shared this key across the app
+            viewModelScope.launch { userStatusDataStoreRepository.setAdminStatus() }
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun filterData(searchQuery: String) {
         if (searchQuery.isNotEmpty()) {
             filterCredentialsByFirestore(searchQuery)
         } else {
@@ -106,6 +122,20 @@ class WebDetailsListViewModel @Inject constructor(
         }
     }
 
+    fun fetchSearchQueryList() {
+        viewModelScope.launch {
+            val queries = queryCacheRepository.getQueryCacheList()
+            queryViewState.updateValue(SearchQueryViewState(queries))
+        }
+    }
+
+    fun updateCredentialList(input: String) {
+        viewModelScope.launch {
+            val searchList = queryCacheRepository.fetchCommonQueries(input)
+            queryViewState.updateValue(SearchQueryViewState(searchList))
+        }
+    }
+
     private fun setLoading(isLoading: Boolean) {
         viewState.update { it.copy(isLoading = isLoading) }
     }
@@ -118,3 +148,8 @@ data class WebCredentialsViewState(
     val isRefreshingButtonVisible: Boolean
         get() = isLoading.not() && credentials.isEmpty()
 }
+
+data class SearchQueryViewState(
+    val queryList: List<QueryData> = emptyList(),
+    val isFabVisible: Boolean = false
+)
