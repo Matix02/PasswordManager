@@ -27,6 +27,8 @@ class WebDetailsListViewModel @Inject constructor(
 ) : ViewModel() {
 
     val queryViewState: LiveData<SearchQueryViewState> = MutableLiveData(SearchQueryViewState())
+    val showFabEvent: LiveData<Event<Boolean>> = MutableLiveData()
+    val hideFabEvent: LiveData<Event<Boolean>> = MutableLiveData()
     val viewState: LiveData<WebCredentialsViewState> = MutableLiveData(WebCredentialsViewState())
     val showRefreshEvent: LiveData<Event<Boolean>> = MutableLiveData()
     val navigateToWebItemEditionEvent: LiveData<Event<WebDetails>> = MutableLiveData()
@@ -122,8 +124,9 @@ class WebDetailsListViewModel @Inject constructor(
         }
     }
 
-    fun fetchSearchQueryList() {
+    fun openSearchView() {
         viewModelScope.launch {
+            hideFab()
             val queries = queryCacheRepository.getQueryCacheList()
             queryViewState.updateValue(SearchQueryViewState(queries))
         }
@@ -134,6 +137,14 @@ class WebDetailsListViewModel @Inject constructor(
             val searchList = queryCacheRepository.fetchCommonQueries(input)
             queryViewState.updateValue(SearchQueryViewState(searchList))
         }
+    }
+
+    fun showFab() {
+        showFabEvent.updateValue(Event(true))
+    }
+
+    private fun hideFab() {
+        hideFabEvent.updateValue(Event(false))
     }
 
     private fun setLoading(isLoading: Boolean) {
@@ -149,7 +160,7 @@ data class WebCredentialsViewState(
         get() = isLoading.not() && credentials.isEmpty()
 }
 
-data class SearchQueryViewState(
-    val queryList: List<QueryData> = emptyList(),
-    val isFabVisible: Boolean = false
+@JvmInline
+value class SearchQueryViewState(
+    val queryList: List<QueryData> = emptyList()
 )

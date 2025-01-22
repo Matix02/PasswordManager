@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 class RefreshViewModel @Inject constructor() : ViewModel() {
 
+    val fabViewState: LiveData<FabViewState> = MutableLiveData(FabViewState(true))
     val refreshingStatusEvent: LiveData<Boolean> = MutableLiveData(false)
     val refreshListEvent: LiveData<Event<String>> = MutableLiveData()
 
@@ -30,3 +31,6 @@ class RefreshViewModel @Inject constructor() : ViewModel() {
     }
 
 }
+
+@JvmInline
+value class FabViewState(val isVisible: Boolean)

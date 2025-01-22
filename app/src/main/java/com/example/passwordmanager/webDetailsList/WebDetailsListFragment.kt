@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.passwordmanager.FabViewState
 import com.example.passwordmanager.R
 import com.example.passwordmanager.RefreshViewModel
 import com.example.passwordmanager.SearchQueryAdapter
@@ -21,6 +22,7 @@ import com.example.passwordmanager.databinding.FragmentWebDetailsListBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
 import com.example.passwordmanager.extension.observeEvent
+import com.example.passwordmanager.extension.updateValue
 import com.example.passwordmanager.webDetailsList.view.WebDetailsAdapter
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView
@@ -71,7 +73,7 @@ class WebDetailsListFragment : Fragment() {
                     showAdminAuthorizationDialog()
                     true
                 }
-                R.id.todoFeature -> {
+                R.id.todoFeature -> { //TODO delete
                     findNavController().navigate(WebDetailsListFragmentDirections.actionWebDetailsListToPinLoginFragment())
                     true
                 }
@@ -86,8 +88,8 @@ class WebDetailsListFragment : Fragment() {
         }
         binding.searchView.addTransitionListener { _, _, searchViewState ->
             when (searchViewState) {
-                SearchView.TransitionState.SHOWING -> viewModel.fetchSearchQueryList()
-                SearchView.TransitionState.HIDING -> Unit //TODO viewModel.showAddCredentialFab()
+                SearchView.TransitionState.SHOWING -> viewModel.openSearchView()
+                SearchView.TransitionState.HIDING -> viewModel.showFab()
                 SearchView.TransitionState.HIDDEN,
                 SearchView.TransitionState.SHOWN -> Unit
             }
@@ -111,7 +113,6 @@ class WebDetailsListFragment : Fragment() {
         }
         viewModel.queryViewState.observe(viewLifecycleOwner) {
             searchQueryAdapter.submitList(it.queryList)
-            //TODO binding.addFloatingActionButton.isVisible = it.isFabVisible
         }
     }
 
@@ -135,15 +136,17 @@ class WebDetailsListFragment : Fragment() {
             val dialogFragment = WebCredentialItemDialogFragment.newInstance(bundle)
             dialogFragment.show(childFragmentManager, "WebCredentialDialog")
         }
-        observeRefreshEvents()
-    }
-
-    private fun observeRefreshEvents() {
         refreshViewModel.refreshListEvent.observeEvent(viewLifecycleOwner) {
             viewModel.refreshData(it)
         }
         refreshViewModel.refreshingStatusEvent.observe(viewLifecycleOwner) { isRefreshing ->
             binding.swipeRefreshLayout.isRefreshing = isRefreshing
+        }
+        viewModel.showFabEvent.observeEvent(viewLifecycleOwner) { showFab ->
+            refreshViewModel.fabViewState.updateValue(FabViewState(showFab))
+        }
+        viewModel.hideFabEvent.observeEvent(viewLifecycleOwner) { hideFab ->
+            refreshViewModel.fabViewState.updateValue(FabViewState(hideFab))
         }
     }
 

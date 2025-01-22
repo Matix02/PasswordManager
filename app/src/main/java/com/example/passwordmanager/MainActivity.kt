@@ -2,6 +2,7 @@ package com.example.passwordmanager
 
 import android.os.Bundle
 import android.view.Menu
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: MainViewModel
+    private val refreshViewModel: RefreshViewModel by viewModels()
 
     private var binding by autoClearedLateinit<ActivityMainBinding>()
     private var fullAccessDialog: AlertDialog? by autoClearedAlertDialog()
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setUpNavigationController()
         setUpApplicationContent()
+        observeViewState()
     }
 
     private fun setUpApplicationContent() {
@@ -66,6 +69,12 @@ class MainActivity : AppCompatActivity() {
     private fun setUpListeners() {
         binding.addFloatingActionButton.setOnClickListener {
             viewModel.tryToNavigateToAddCredentialItem()
+        }
+    }
+
+    private fun observeViewState() {
+        refreshViewModel.fabViewState.observe(this) {
+            if (it.isVisible) binding.addFloatingActionButton.show() else binding.addFloatingActionButton.hide()
         }
     }
 
