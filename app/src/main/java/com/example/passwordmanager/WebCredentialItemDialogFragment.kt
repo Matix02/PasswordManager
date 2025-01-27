@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import com.example.passwordmanager.authentication.pin.DialogBuilder
 import com.example.passwordmanager.databinding.FragmentWebCredentialItemDialogBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
@@ -91,38 +90,48 @@ class WebCredentialItemDialogFragment : DialogFragment() {
     }
 
     private fun showPinVerificationDialog() {
-        alertPinDialog = DialogBuilder.create(requireContext(),
-            onPositiveButtonClick = { viewModel.checkPinForDialog(it) },
-            onCancelListener = { viewModel.updateBelongToAdminAccess(false) }
-        )
+        alertPinDialog?.dismiss()
+//        alertPinDialog = DialogBuilder.create(  //TODO refactor Item Fragment
+//            context = requireContext(),
+//            dialogViewEntity = ,
+//            onPositiveButtonClick = { viewModel.checkPinForDialog(it) }
+//        )
     }
 
     private fun showPinVerificationDialogForDeleting() {
-        alertPinDialog = DialogBuilder.create(
-            requireContext(),
-            onPositiveButtonClick = { viewModel.checkPinForDeleteDialog(it) },
-        )
+        alertPinDialog?.dismiss()
+//        alertPinDialog = DialogBuilder.create( //TODO refactor Item Fragment
+//            context = requireContext(),
+//            dialogViewEntity = ,
+//            onPositiveButtonClick = { viewModel.checkPinForDeleteDialog(it) },
+//        )
     }
 
     private fun showPinVerificationDialogWithoutAuthentication() {
-        alertPinDialog = DialogBuilder.create2(requireContext(),
-            onPositiveButtonClick = { viewModel.showDeleteConfirmationDialog() }
-        )
+        alertPinDialog?.dismiss()
+//        alertPinDialog = DialogBuilder.create2( //TODO refactor Item Fragment
+//            context = requireContext(),
+//            onPositiveButtonClick = { viewModel.showDeleteConfirmationDialog() }
+//        )
     }
 
     private fun showPinVerificationDialogToEditItem(oldName: String, item: NewWebCredentialItem) {
-        alertPinDialog = DialogBuilder.create(
-            requireContext(),
-            onPositiveButtonClick = { viewModel.checkPinToEditData(input = it, oldName, item) }
-        )
+        alertPinDialog?.dismiss()
+//        alertPinDialog = DialogBuilder.create( //TODO refactor Item Fragment
+//            context = requireContext(),
+//            dialogViewEntity = ,
+//            onPositiveButtonClick = { viewModel.checkPinToEditData(input = it, oldName, item) }
+//        )
     }
 
     private fun observeData() {
         viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            binding.txtUri.setText(viewState?.newItem?.urlIcon)
-            binding.txtName.setText(viewState?.newItem?.name)
-            binding.txtPassword.setText(viewState?.newItem?.password)
-            binding.txtLogin.setText(viewState?.newItem?.username)
+            viewState?.newItem?.let {
+                binding.txtUri.setText(it.urlIcon)
+                binding.txtName.setText(it.name)
+                binding.txtPassword.setText(it.password)
+                binding.txtLogin.setText(it.username)
+            }
             binding.btnDelete.isVisible = viewModel.oldWebDetails != null
         }
         viewModel.saveCredentialItemEvent.observeEvent(viewLifecycleOwner) {
@@ -160,7 +169,7 @@ class WebCredentialItemDialogFragment : DialogFragment() {
             showPinVerificationDialogWithoutAuthentication()
         }
         viewModel.showDiscardChangesDialogEvent.observeEvent(viewLifecycleOwner) {
-            MaterialAlertDialogBuilder(requireContext())
+            MaterialAlertDialogBuilder(requireContext()) //TODO refactor Item Fragment
                 .setTitle("Discard Changes?")
                 .setMessage("") //TODO Message
                 .setNegativeButton("Cancel") { dialog, _ ->
@@ -170,7 +179,7 @@ class WebCredentialItemDialogFragment : DialogFragment() {
                     viewModel.navigateUp()
                 }.show()
         }
-        viewModel.showPinVerificationDialog.observeEvent(viewLifecycleOwner) {
+        viewModel.showPinVerificationDialogEvent.observeEvent(viewLifecycleOwner) {
             showPinVerificationDialog()
         }
         viewModel.showEditDialogWithAuthenticationEvent.observeEvent(viewLifecycleOwner) {

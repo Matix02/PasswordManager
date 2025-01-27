@@ -17,7 +17,7 @@ import com.example.passwordmanager.R
 import com.example.passwordmanager.RefreshViewModel
 import com.example.passwordmanager.SearchQueryAdapter
 import com.example.passwordmanager.WebCredentialItemDialogFragment
-import com.example.passwordmanager.authentication.pin.DialogBuilder
+import com.example.passwordmanager.authentication.pin.AdminAuthorizationDialog
 import com.example.passwordmanager.databinding.FragmentWebDetailsListBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
@@ -151,7 +151,7 @@ class WebDetailsListFragment : Fragment() {
     }
 
     private fun showAdminAuthorizationDialog() {
-        fullAccessDialog = DialogBuilder.create(
+        fullAccessDialog = AdminAuthorizationDialog.create(
             context = requireContext(),
             onPositiveButtonClick = { viewModel.verifyAccessPin(it) }
         )

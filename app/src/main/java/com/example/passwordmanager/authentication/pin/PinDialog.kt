@@ -9,15 +9,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object DialogBuilder {
 
-    fun create(context: Context, onPositiveButtonClick: (String) -> Boolean, onCancelListener: (() -> Unit)? = null): AlertDialog {
+    fun build(context: Context, dialogViewEntity: DialogViewEntity, onPositiveButtonClick: (String) -> Boolean): AlertDialog {
         val binding = DialogTextInputBinding.inflate(LayoutInflater.from(context))
 
         val dialog = MaterialAlertDialogBuilder(context).apply {
             setView(binding.root)
-            setTitle("Test")
-            setCancelable(false)
-            setNegativeButton("Cancel", null)
-            setPositiveButton("OK", null)
+            setTitle(dialogViewEntity.title)
+            setMessage(dialogViewEntity.message)
+            setNegativeButton(dialogViewEntity.negativeButtonTitle, null)
+            setPositiveButton(dialogViewEntity.positiveButtonTitle, null)
         }.create().also { it.show() }
 
         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
@@ -25,37 +25,12 @@ object DialogBuilder {
             if (isValid) {
                 dialog.dismiss()
             } else {
-                binding.dialogTextInputLayout.error = "Wrong Pin!"
+                binding.dialogTextInputLayout.error = dialogViewEntity.errorMessage
             }
         }
 
         dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
-            onCancelListener?.invoke()
             dialog.dismiss()
-        }
-
-        binding.dialogTextInputLayout.editText?.doOnTextChanged { _, _, _, _ ->
-            binding.dialogTextInputLayout.error = null
-        }
-
-        return dialog
-    }
-
-    fun create2(
-        context: Context,
-        onPositiveButtonClick: () -> Unit,
-    ): AlertDialog {
-        val binding = DialogTextInputBinding.inflate(LayoutInflater.from(context))
-
-        val dialog = MaterialAlertDialogBuilder(context).apply {
-            setTitle("Test")
-            setCancelable(false)
-            setNegativeButton("Cancel", null)
-            setPositiveButton("OK", null)
-        }.create().also { it.show() }
-
-        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            onPositiveButtonClick.invoke()
         }
 
         binding.dialogTextInputLayout.editText?.doOnTextChanged { _, _, _, _ ->

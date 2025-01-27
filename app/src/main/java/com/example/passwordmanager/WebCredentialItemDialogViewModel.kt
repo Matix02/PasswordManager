@@ -26,7 +26,7 @@ class WebCredentialItemDialogViewModel @Inject constructor(
     val showEditDialogWithAuthenticationEvent: LiveData<Event<Pair<String, NewWebCredentialItem>>> = MutableLiveData()
     val navigateUpEvent: LiveData<Event<Unit>> = MutableLiveData()
     val refreshEvent: LiveData<Event<Unit>> = MutableLiveData()
-    val showPinVerificationDialog: LiveData<Event<Unit>> = MutableLiveData()
+    val showPinVerificationDialogEvent: LiveData<Event<Unit>> = MutableLiveData()
     val hideKeyboardEvent: LiveData<Event<Unit>> = MutableLiveData()
     val showNameEmptyErrorInputEvent: LiveData<Event<Unit>> = MutableLiveData()
     val showPasswordEmptyErrorInputEvent: LiveData<Event<Unit>> = MutableLiveData()
@@ -173,7 +173,7 @@ class WebCredentialItemDialogViewModel @Inject constructor(
     fun authorize(isChecked: Boolean) {
         viewModelScope.launch {
             if (isChecked && userDataStoreRepository.isAdmin().not()) {
-                showPinVerificationDialog.updateValue(Event(Unit))
+                showPinVerificationDialogEvent.updateValue(Event(Unit))
             } else {
                 updateBelongToAdminAccess(isChecked)
             }

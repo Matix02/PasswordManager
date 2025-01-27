@@ -22,7 +22,7 @@ class RefreshViewModel @Inject constructor() : ViewModel() {
         getCredentials(query)
     }
 
-    fun updateRefreshingStatus(isRefreshing: Boolean) {
+    fun updateRefreshingStatus(isRefreshing: Boolean) { //TODO check if needed when PIN becomes 1st page
         refreshingStatusEvent.updateValue(isRefreshing)
     }
 

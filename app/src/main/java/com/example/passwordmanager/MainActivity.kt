@@ -9,10 +9,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.example.passwordmanager.authentication.pin.DialogBuilder
+import com.example.passwordmanager.authentication.pin.AdminAuthorizationDialog
 import com.example.passwordmanager.databinding.ActivityMainBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
+import com.example.passwordmanager.extension.observeEvent
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -59,13 +60,6 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.findNavController()
     }
 
-    private fun showAdminAuthorizationDialog() {
-        fullAccessDialog = DialogBuilder.create(
-            context = this,
-            onPositiveButtonClick = { viewModel.verifyAccessPin(it) }
-        )
-    }
-
     private fun setUpListeners() {
         binding.addFloatingActionButton.setOnClickListener {
             viewModel.tryToNavigateToAddCredentialItem()
@@ -79,10 +73,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeEvents() {
-        viewModel.navigateToAddCredentialItemEvent.observe(this) {
+        viewModel.navigateToAddCredentialItemEvent.observeEvent(this) {
             showAddCredentialDialog()
         }
-        viewModel.showNoAccessSnackbarEvent.observe(this) {
+        viewModel.showNoAccessSnackbarEvent.observeEvent(this) {
             Snackbar
                 .make(binding.root, "Nie masz dostępu!", Snackbar.LENGTH_LONG)
                 .setAction("Autoryzuj") { showAdminAuthorizationDialog() }
@@ -92,6 +86,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun showAddCredentialDialog() {
         WebCredentialItemDialogFragment().show(supportFragmentManager, "WebCredentialDialog")
+    }
+
+    private fun showAdminAuthorizationDialog() {
+        fullAccessDialog = AdminAuthorizationDialog.create(
+            context = this,
+            onPositiveButtonClick = { viewModel.verifyAccessPin(it) }
+        )
     }
 
 }
