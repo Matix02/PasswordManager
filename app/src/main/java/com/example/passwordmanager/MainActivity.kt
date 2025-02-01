@@ -9,7 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.example.passwordmanager.authentication.pin.AdminAuthorizationDialog
+import com.example.passwordmanager.authentication.pin.AdminPinAuthorizationDialog
+import com.example.passwordmanager.authentication.pin.PinVerificationViewModel
 import com.example.passwordmanager.databinding.ActivityMainBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
@@ -22,7 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    private val pinVerificationViewModel: PinVerificationViewModel by viewModels { viewModelFactory }
     private val refreshViewModel: RefreshViewModel by viewModels()
 
     private var binding by autoClearedLateinit<ActivityMainBinding>()
@@ -41,7 +43,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpApplicationContent() {
-        setUpViewModel()
         setUpListeners()
         observeEvents()
     }
@@ -49,10 +50,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar, menu)
         return true
-    }
-
-    private fun setUpViewModel() {
-        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
     }
 
     private fun setUpNavigationController() {
@@ -89,10 +86,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showAdminAuthorizationDialog() {
-        fullAccessDialog = AdminAuthorizationDialog.create(
+        fullAccessDialog = AdminPinAuthorizationDialog.create(
             context = this,
-            onPositiveButtonClick = { viewModel.verifyAccessPin(it) }
+            onPositiveButtonClick = { pinVerificationViewModel.checkAdminPin(it) }
         )
     }
-
 }

@@ -11,11 +11,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.passwordmanager.authentication.pin.DialogFactory
+import com.example.passwordmanager.authentication.pin.DialogViewEntity
 import com.example.passwordmanager.databinding.FragmentWebCredentialItemDialogBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
 import com.example.passwordmanager.extension.observeEvent
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -29,7 +30,8 @@ class WebCredentialItemDialogFragment : DialogFragment() {
     private var binding by autoClearedLateinit<FragmentWebCredentialItemDialogBinding>()
     private val refreshViewModel: RefreshViewModel by activityViewModels()
 
-    private var alertPinDialog: AlertDialog? by autoClearedAlertDialog()
+    private var deleteConfirmationDialog: AlertDialog? by autoClearedAlertDialog()
+    private var discardConfirmationDialog: AlertDialog? by autoClearedAlertDialog()
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -78,7 +80,7 @@ class WebCredentialItemDialogFragment : DialogFragment() {
             )
         }
         binding.btnDelete.setOnClickListener {
-            viewModel.tryToDeleteItem()
+            showDeleteConfirmationDialog()
         }
         binding.txtPassword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -89,43 +91,22 @@ class WebCredentialItemDialogFragment : DialogFragment() {
         }
     }
 
-    private fun showPinVerificationDialog() {
-        alertPinDialog?.dismiss()
-//        alertPinDialog = DialogBuilder.create(  //TODO refactor Item Fragment
-//            context = requireContext(),
-//            dialogViewEntity = ,
-//            onPositiveButtonClick = { viewModel.checkPinForDialog(it) }
-//        )
-    }
-
-    private fun showPinVerificationDialogForDeleting() {
-        alertPinDialog?.dismiss()
-//        alertPinDialog = DialogBuilder.create( //TODO refactor Item Fragment
-//            context = requireContext(),
-//            dialogViewEntity = ,
-//            onPositiveButtonClick = { viewModel.checkPinForDeleteDialog(it) },
-//        )
-    }
-
-    private fun showPinVerificationDialogWithoutAuthentication() {
-        alertPinDialog?.dismiss()
-//        alertPinDialog = DialogBuilder.create2( //TODO refactor Item Fragment
-//            context = requireContext(),
-//            onPositiveButtonClick = { viewModel.showDeleteConfirmationDialog() }
-//        )
-    }
-
-    private fun showPinVerificationDialogToEditItem(oldName: String, item: NewWebCredentialItem) {
-        alertPinDialog?.dismiss()
-//        alertPinDialog = DialogBuilder.create( //TODO refactor Item Fragment
-//            context = requireContext(),
-//            dialogViewEntity = ,
-//            onPositiveButtonClick = { viewModel.checkPinToEditData(input = it, oldName, item) }
-//        )
+    private fun showDeleteConfirmationDialog() {
+        val dialogViewEntity = DialogViewEntity(
+            title = "Delete this credential item?",
+            message = "This credential item will be permanently removed from the database and all devices",
+            positiveButtonTitle = "Delete",
+            negativeButtonTitle = "Cancel"
+        )
+        deleteConfirmationDialog = DialogFactory.confirmationDialog(
+            context = requireContext(),
+            dialogViewEntity = dialogViewEntity,
+            onPositiveButtonClick = { viewModel.deleteItem() }
+        )
     }
 
     private fun observeData() {
-        viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
+        viewModel.viewEntity.observe(viewLifecycleOwner) { viewState ->
             viewState?.newItem?.let {
                 binding.txtUri.setText(it.urlIcon)
                 binding.txtName.setText(it.name)
@@ -162,28 +143,18 @@ class WebCredentialItemDialogFragment : DialogFragment() {
         viewModel.hideKeyboardEvent.observeEvent(viewLifecycleOwner) {
             binding.root.clearFocus()
         }
-        viewModel.showDeleteDialogWithAuthenticationEvent.observeEvent(viewLifecycleOwner) {
-            showPinVerificationDialogForDeleting()
-        }
-        viewModel.showDeleteConfirmationDialogEvent.observeEvent(viewLifecycleOwner) {
-            showPinVerificationDialogWithoutAuthentication()
-        }
         viewModel.showDiscardChangesDialogEvent.observeEvent(viewLifecycleOwner) {
-            MaterialAlertDialogBuilder(requireContext()) //TODO refactor Item Fragment
-                .setTitle("Discard Changes?")
-                .setMessage("") //TODO Message
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton("Ok") { _, _ ->
-                    viewModel.navigateUp()
-                }.show()
-        }
-        viewModel.showPinVerificationDialogEvent.observeEvent(viewLifecycleOwner) {
-            showPinVerificationDialog()
-        }
-        viewModel.showEditDialogWithAuthenticationEvent.observeEvent(viewLifecycleOwner) {
-            showPinVerificationDialogToEditItem(it.first, it.second)
+            val dialogViewEntity = DialogViewEntity(
+                title = "Discard changes?",
+                message = "There are some changes. Do you really want to discard them and navigate up?",
+                positiveButtonTitle = "Discard",
+                negativeButtonTitle = "Cancel"
+            )
+            discardConfirmationDialog = DialogFactory.confirmationDialog(
+                context = requireContext(),
+                dialogViewEntity = dialogViewEntity,
+                onPositiveButtonClick = { viewModel.navigateUp() }
+            )
         }
     }
 
@@ -193,9 +164,6 @@ class WebCredentialItemDialogFragment : DialogFragment() {
         const val CREDENTIAL_ITEM_NAME_KEY = "web-credential-item-name-key"
         const val CREDENTIAL_ITEM_LOGIN_KEY = "web-credential-item-login-key"
         const val CREDENTIAL_ITEM_PASSWORD_KEY = "web-credential-item-password-key"
-
-        const val REQUEST_KEY = "isAuthorizationSuccessful"
-        const val RESULT_KEY = "resultKey"
 
         fun newInstance(data: Bundle?): WebCredentialItemDialogFragment {
             return WebCredentialItemDialogFragment().apply {

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,8 @@ import com.example.passwordmanager.R
 import com.example.passwordmanager.RefreshViewModel
 import com.example.passwordmanager.SearchQueryAdapter
 import com.example.passwordmanager.WebCredentialItemDialogFragment
-import com.example.passwordmanager.authentication.pin.AdminAuthorizationDialog
+import com.example.passwordmanager.authentication.pin.AdminPinAuthorizationDialog
+import com.example.passwordmanager.authentication.pin.PinVerificationViewModel
 import com.example.passwordmanager.databinding.FragmentWebDetailsListBinding
 import com.example.passwordmanager.extension.autoClearedAlertDialog
 import com.example.passwordmanager.extension.autoClearedLateinit
@@ -41,8 +43,8 @@ class WebDetailsListFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var viewModel: WebDetailsListViewModel
-
+    private val viewModel: WebDetailsListViewModel by viewModels { viewModelFactory }
+    private val pinVerificationViewModel: PinVerificationViewModel by viewModels { viewModelFactory }
     private val refreshViewModel: RefreshViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
@@ -57,7 +59,6 @@ class WebDetailsListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory)[WebDetailsListViewModel::class.java]
         setUpSearchBar()
         setUpListeners()
         setUpRecycleViews()
@@ -151,9 +152,9 @@ class WebDetailsListFragment : Fragment() {
     }
 
     private fun showAdminAuthorizationDialog() {
-        fullAccessDialog = AdminAuthorizationDialog.create(
+        fullAccessDialog = AdminPinAuthorizationDialog.create(
             context = requireContext(),
-            onPositiveButtonClick = { viewModel.verifyAccessPin(it) }
+            onPositiveButtonClick = { pinVerificationViewModel.checkAdminPin(it) }
         )
     }
 

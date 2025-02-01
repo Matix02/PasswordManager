@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.passwordmanager.BuildConfig
 import com.example.passwordmanager.authentication.pin.UserStatusDataStoreRepository
 import com.example.passwordmanager.extension.Event
 import com.example.passwordmanager.extension.update
@@ -49,15 +48,6 @@ class WebDetailsListViewModel @Inject constructor(
         viewModelScope.launch {
             filterData(searchQuery)
             showRefreshEvent.updateValue(Event(false))
-        }
-    }
-
-    fun verifyAccessPin(pinInput: String): Boolean {
-        return if (pinInput == BuildConfig.ADMIN_KEY) { //TODO shared this key across the app
-            viewModelScope.launch { userStatusDataStoreRepository.setAdminStatus() }
-            true
-        } else {
-            false
         }
     }
 

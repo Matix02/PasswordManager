@@ -26,14 +26,4 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-    fun verifyAccessPin(pinInput: String): Boolean {
-        return if (pinInput == BuildConfig.ADMIN_KEY) { //TODO shared this key across the app
-            viewModelScope.launch { userStatusDataStoreRepository.setAdminStatus() }
-            true
-        } else {
-            false
-        }
-    }
-
 }
